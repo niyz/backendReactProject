@@ -1,23 +1,29 @@
+/** 
+ * Server
+ */
+
 const express = require('express');
 var app = express();
-//var test = require("./database.js");
 
 app.use(express.json())
 var path = require('path');
 
+app.listen(process.env.PORT || 8080)
+
+
+/**
+ * Get and postmappings
+ */
+
 app.get('/', (req,res) => {
     res.sendFile(path.join(__dirname + '/index.html'))
 });
-
-app.listen(process.env.PORT || 8080)
-
 
 app.get('/user/:user_id', (req,res) => {
     var userId = req.params.user_id;
     console.log(userId)
     var sqlQuery = "SELECT * FROM user WHERE user_id = " + userId +";";
     dbFunctions(sqlQuery);
-    // Fixa user_id https://stackoverflow.com/questions/17007997/how-to-access-the-get-parameters-after-in-express
 })
 
 app.get('/restaurant/:restaurant_id', (req,res) => {
@@ -31,18 +37,17 @@ app.get('/review/restaurant/:restaurant_id', (req,res) => {
     var restId = req.params.restaurant_id;
     console.log(restId)
     var sqlQuery = "SELECT * FROM review WHERE restaurant_id = " + restId +";"; 
-
     console.log(restId)
     dbFunctions(sqlQuery);
-    //TODO: Simon
+   
 })
 
 app.get('/review/latest/', (req,res) => {
-    //TODO: Maria
-    var latest = req.params.latest;
-    console.log(latest);
-    let sqlQueryM = "SELECT * FROM review WHERE latest = " + latest +";";
-    dbFunctions(sqlQueryM);
+
+    let sqlQueryS = "SELECT * FROM review ORDER BY updated_at DESC";
+    dbFunctions(sqlQueryS);
+    res.send(200);
+
 })
 
 
@@ -52,54 +57,51 @@ app.post('/user/update', (req,res) => {
         + "'" + ", password =" + "'" + req.body.password + "'" + ", role=" + "'" + req.body.role + "'"
         + ", updated_at = '" + dateFunc() + "' WHERE user_id = " + req.body.user_id + ";";
   
-    //console.log(sqlQuery);
-    res.send("Works..");
+    res.send(200);
     dbFunctions(sqlQuery);
 } )
+
 app.post('/user/create', (req, res) => {
-    let sqlQuery = "INSERT INTO user(username,email,password,role,created_at,active) VALUES" +
+    let sqlQuery = "INSERT INTO user(username,email,password,role,created_at, updated_at,active) VALUES" +
         "(" + "'" + req.body.username + "'," + "'" + req.body.email + "'," + "'" + req.body.password + "'," +
-        "'" + req.body.role + "'," + "'" + dateFunc() + "'," + "'" + req.body.active + "');";
+        "'" + req.body.role + "'," + "'" + dateFunc() + "'," + "'" + dateFunc() + "'," + "'" + 1 + "');";
     dbFunctions(sqlQuery);
     res.send(200);
 })
 
 app.post('/review/update', (req, res) => {
 
-    let sqlQuery = "UPDATE review SET " + "user_id =" + req.body.user_id + ", restaurant_id =" + req.body.restaurant_id + ", rating=" + req.body.rating + ", review_text = '" + req.body.reviewText + "' WHERE review_id = " + req.body.review_id + ";";
+    let sqlQuery = "UPDATE review SET " + "user_id =" + req.body.user_id + ", restaurant_id =" + req.body.restaurant_id + ", rating=" + req.body.rating + ", review_text = '" + req.body.reviewText + "', updated_at='" + dateFunc() + "' WHERE review_id = " + req.body.review_id + ";";
   
-    res.send("Works..");
     dbFunctions(sqlQuery);
-    //TODO: Simon
-})
-app.post('/review/create', (req, res) => {
-    //TODO: Maria
-    let sqlQuery = "INSERT INTO review (restaurant_id, user_id, rating, review_text, created_at, active) VALUES (" + "'" +req.body.restaurant_id + "', " + "'" +req.body.user_id + "', " +req.body.rating + "," + "'" + req.body.review_text + "', '" + dateFunc() + "'," + "'" + 1 + "' );";
-    console.log(sqlQuery);
     res.send(200);
+})
+
+app.post('/review/create', (req, res) => {
+    let sqlQuery = "INSERT INTO review (rating, review_text, created_at, updated_at, active, user_id, restaurant_id) VALUES (" + "'" 
+    +req.body.rating + "', " + "'" + req.body.reviewText + "', '" + dateFunc() + "', '" + dateFunc() + "', '" + 1 + "', '" + req.body.user_id + "', '" + req.body.restaurant_id + "');";
+    
+  
     dbFunctions(sqlQuery);
+    res.send(200);
 })
 
 app.post('/restaurant/update', (req, res) => {
-    //TODO: Pär
 
-    let sqlQuery = "UPDATE restaurant SET " + "user_id =" + req.body.user_id + ", name ='" + req.body.name + "', description='" + req.body.description + "', category = '" + req.body.category + "' WHERE restaurant_id = " + req.body.restaurant_id + ";";
+    let sqlQuery = "UPDATE restaurant SET " + "user_id =" + req.body.user_id + ", name ='" + req.body.name + "', description='" + req.body.description + "', category = '" + req.body.category + "', updated_at='"+ dateFunc() +"' WHERE restaurant_id = " + req.body.restaurant_id + ";";
   
-    res.send("Works..");
-    console.log(sqlQuery);
     dbFunctions(sqlQuery);
-    //TODO: Simon
+    res.send(200);
 
 })
+
 app.post('/restaurant/create', (req, res) => {
+  
     let active = 1;
+    let sqlQuery = "INSERT INTO restaurant (name, address, description,category, created_at, updated_at, active, user_id) VALUES ('" + req.body.name + "', '" + req.body.address + "', '" + req.body.description + "' , '" + req.body.category + "' , '" + dateFunc() + "', '"+ dateFunc() + "', " + active +", " + req.body.user_id + ");" ;
 
-    let sqlQuery = "INSERT INTO restaurant (name, address, description,category, created_at, active, user_id) VALUES ('" + req.body.name + "', '" + req.body.address + "', '" + req.body.description + "' , '" + req.body.category + "' , '" + dateFunc() + "', " + active +", " + req.body.user_id + ");" ;
-
-    console.log(sqlQuery);
-    res.send("Works..");
     dbFunctions(sqlQuery);
-    //TODO: Simon
+    res.send(200);
 })
 
 
