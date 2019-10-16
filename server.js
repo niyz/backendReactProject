@@ -39,6 +39,10 @@ app.get('/review/restaurant/:restaurant_id', (req,res) => {
 
 app.get('/review/latest/', (req,res) => {
     //TODO: Maria
+    var latest = req.params.latest;
+    console.log(latest);
+    let sqlQueryM = "SELECT * FROM review WHERE latest = " + latest +";";
+    dbFunctions(sqlQueryM);
 })
 
 
@@ -70,6 +74,10 @@ app.post('/review/update', (req, res) => {
 })
 app.post('/review/create', (req, res) => {
     //TODO: Maria
+    let sqlQuery = "INSERT INTO review (restaurant_id, user_id, rating, review_text, created_at, active) VALUES (" + "'" +req.body.restaurant_id + "', " + "'" +req.body.user_id + "', " +req.body.rating + "," + "'" + req.body.review_text + "', '" + dateFunc() + "'," + "'" + 1 + "' );";
+    console.log(sqlQuery);
+    res.send(200);
+    dbFunctions(sqlQuery);
 })
 
 app.post('/restaurant/update', (req, res) => {
@@ -123,7 +131,7 @@ function connectToDb() {
             port: "3306", 
             user: "root", 
             password: "", 
-            database: "task25"
+            database: "grouptask_db"
         }
     );
     console.log("Connected");
