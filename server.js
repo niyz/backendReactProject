@@ -15,13 +15,16 @@ app.listen(process.env.PORT || 8080)
 app.get('/user/:user_id', (req,res) => {
     var userId = req.params.user_id;
     console.log(userId)
-    var sqlQuery = "SELECT * FROM user WHERE user_id = " + userId +";"; 
+    var sqlQuery = "SELECT * FROM user WHERE user_id = " + userId +";";
     dbFunctions(sqlQuery);
     // Fixa user_id https://stackoverflow.com/questions/17007997/how-to-access-the-get-parameters-after-in-express
 })
 
 app.get('/restaurant/:restaurant_id', (req,res) => {
-    //TODO: Pär
+    let resturantId = req.params.restaurant_id;
+    let sqlQuery =  "SELECT * FROM restaurant WHERE restaurant_id = " + resturantId +";";
+    dbFunctions(sqlQuery);
+    res.send(200);
 })
 
 app.get('/review/restaurant/:restaurant_id', (req,res) => {
@@ -41,14 +44,20 @@ app.get('/review/latest/', (req,res) => {
 
 app.post('/user/update', (req,res) => {
 
-    let sqlQuery = "UPDATE user SET username =" + "'" + req.body.username + "'" + ", email =" + "'" + req.body.email + "'" + ", password =" + "'" + req.body.password + "'" + ", role=" + "'" + req.body.role + "'" + ", updated_at = '" + dateFunc() + "' WHERE user_id = " + req.body.user_id + ";";
+    let sqlQuery = "UPDATE user SET username =" + "'" + req.body.username + "'" + ", email =" + "'" + req.body.email
+        + "'" + ", password =" + "'" + req.body.password + "'" + ", role=" + "'" + req.body.role + "'"
+        + ", updated_at = '" + dateFunc() + "' WHERE user_id = " + req.body.user_id + ";";
   
     //console.log(sqlQuery);
     res.send("Works..");
     dbFunctions(sqlQuery);
 } )
 app.post('/user/create', (req, res) => {
-    //TODO: Pär
+    let sqlQuery = "INSERT INTO user(username,email,password,role,created_at,active) VALUES" +
+        "(" + "'" + req.body.username + "'," + "'" + req.body.email + "'," + "'" + req.body.password + "'," +
+        "'" + req.body.role + "'," + "'" + dateFunc() + "'," + "'" + req.body.active + "');";
+    dbFunctions(sqlQuery);
+    res.send(200);
 })
 
 app.post('/review/update', (req, res) => {
@@ -114,7 +123,7 @@ function connectToDb() {
             port: "3306", 
             user: "root", 
             password: "", 
-            database: "databasegroup"
+            database: "task25"
         }
     );
     console.log("Connected");
