@@ -25,6 +25,12 @@ app.get('/restaurant/:restaurant_id', (req,res) => {
 })
 
 app.get('/review/restaurant/:restaurant_id', (req,res) => {
+    var restId = req.params.restaurant_id;
+    console.log(restId)
+    var sqlQuery = "SELECT * FROM review WHERE restaurant_id = " + restId +";"; 
+
+    console.log(restId)
+    dbFunctions(sqlQuery);
     //TODO: Simon
 })
 
@@ -46,6 +52,11 @@ app.post('/user/create', (req, res) => {
 })
 
 app.post('/review/update', (req, res) => {
+
+    let sqlQuery = "UPDATE review SET " + "user_id =" + req.body.user_id + ", restaurant_id =" + req.body.restaurant_id + ", rating=" + req.body.rating + ", review_text = '" + req.body.reviewText + "' WHERE review_id = " + req.body.review_id + ";";
+  
+    res.send("Works..");
+    dbFunctions(sqlQuery);
     //TODO: Simon
 })
 app.post('/review/create', (req, res) => {
@@ -54,8 +65,23 @@ app.post('/review/create', (req, res) => {
 
 app.post('/restaurant/update', (req, res) => {
     //TODO: Pär
+
+    let sqlQuery = "UPDATE restaurant SET " + "user_id =" + req.body.user_id + ", name ='" + req.body.name + "', description='" + req.body.description + "', category = '" + req.body.category + "' WHERE restaurant_id = " + req.body.restaurant_id + ";";
+  
+    res.send("Works..");
+    console.log(sqlQuery);
+    dbFunctions(sqlQuery);
+    //TODO: Simon
+
 })
 app.post('/restaurant/create', (req, res) => {
+    let active = 1;
+
+    let sqlQuery = "INSERT INTO restaurant (name, address, description,category, created_at, active, user_id) VALUES ('" + req.body.name + "', '" + req.body.address + "', '" + req.body.description + "' , '" + req.body.category + "' , '" + dateFunc() + "', " + active +", " + req.body.user_id + ");" ;
+
+    console.log(sqlQuery);
+    res.send("Works..");
+    dbFunctions(sqlQuery);
     //TODO: Simon
 })
 
