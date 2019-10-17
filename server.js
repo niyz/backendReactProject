@@ -23,32 +23,42 @@ app.get('/user/:user_id', (req,res) => {
     var userId = req.params.user_id;
     console.log(userId)
     var sqlQuery = "SELECT * FROM user WHERE user_id = " + userId +";";
-    dbFunctions(sqlQuery);
+    dbFunctions(sqlQuery)
+    .then((result) => {
+        res.send(result);
+    });
 })
 
 app.get('/restaurant/:restaurant_id', (req,res) => {
     let resturantId = req.params.restaurant_id;
     let sqlQuery =  "SELECT * FROM restaurant WHERE restaurant_id = " + resturantId +";";
-    dbFunctions(sqlQuery);
-    res.send(200);
-})
+    dbFunctions(sqlQuery)
+    .then((result) => {
+        res.send(result)
+    });
+});
 
 app.get('/review/restaurant/:restaurant_id', (req,res) => {
     var restId = req.params.restaurant_id;
     console.log(restId)
     var sqlQuery = "SELECT * FROM review WHERE restaurant_id = " + restId +";"; 
     console.log(restId)
-    dbFunctions(sqlQuery);
+    dbFunctions(sqlQuery)
+    .then((result) => {
+        res.send(result)
+    });
    
-})
+});
 
 app.get('/review/latest/', (req,res) => {
 
     let sqlQueryS = "SELECT * FROM review ORDER BY updated_at DESC";
-    dbFunctions(sqlQueryS);
-    res.send(200);
+    dbFunctions(sqlQueryS)
+    .then((result) => {
+        res.send(result)
+    })
 
-})
+});
 
 
 app.post('/user/update', (req,res) => {
@@ -65,9 +75,12 @@ app.post('/user/create', (req, res) => {
     let sqlQuery = "INSERT INTO user(username,email,password,role,created_at, updated_at,active) VALUES" +
         "(" + "'" + req.body.username + "'," + "'" + req.body.email + "'," + "'" + req.body.password + "'," +
         "'" + req.body.role + "'," + "'" + dateFunc() + "'," + "'" + dateFunc() + "'," + "'" + 1 + "');";
-    dbFunctions(sqlQuery);
-    res.send(200);
-})
+    dbFunctions(sqlQuery)
+    .then(() => {
+    res.send("User created");
+
+    });
+});
 
 app.post('/review/update', (req, res) => {
 
@@ -143,19 +156,35 @@ function connectToDb() {
 
 function closeDb(con) {
     con.end();
+    console.log("Connection closed");
 }
-
 
 function dbFunctions(sqlQuery) {
     let con = connectToDb();
-    console.log(sqlQuery)
 
-    con.query(sqlQuery, function (err, result) {
-        if (err) throw err;
+    return new Promise((result) => {
+        con.query(sqlQuery, (err, res) => {
+        //console.log("In dbFunctions()")
+        if (err) throw "This is an error in con.query()";
+        result(JSON.stringify(res))
+        })
+        closeDb(con);
+    })
+}
+
+function dbFunctions2(sqlQuery) {
+    let con = connectToDb();
+    console.log(sqlQuery)
+        con.query(sqlQuery, function (err, result) {
+
+        console.log("In dbFunctions()")
+        //if (err) throw "This is an error in con.query()";
+
         console.log("result:" + JSON.stringify(result));
         
-    });
+        //closeDb(con)
+        return JSON.stringify(result);
 
-    closeDb(con)
+    })
 }
 
