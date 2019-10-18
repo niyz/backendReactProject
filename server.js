@@ -36,15 +36,6 @@ app.get('/user/:user_id', (req,res) => {
     .then((result) => {
         res.send(result);
     });
-})
-
-app.get('/restaurant/:restaurant_id', (req,res) => {
-    let resturantId = req.params.restaurant_id;
-    let sqlQuery =  "SELECT * FROM restaurant WHERE restaurant_id = " + resturantId +";";
-    dbFunctions(sqlQuery)
-    .then((result) => {
-        res.send(result)
-    });
 });
 
 app.get('/review/restaurant/:restaurant_id', (req,res) => {
@@ -59,7 +50,7 @@ app.get('/review/restaurant/:restaurant_id', (req,res) => {
    
 });
 
-app.get('/review/latest/', (req,res,/* next*/) => {
+app.get('/review/latest/', (req,res) => {
      let sqlQueryS = "SELECT * FROM review ORDER BY updated_at DESC";
     dbFunctions(sqlQueryS)
     .then((result) => {
@@ -69,14 +60,28 @@ app.get('/review/latest/', (req,res,/* next*/) => {
 
 });
 
-app.get('/restaurant/latest/', (req,res,/* next*/) => {
-    let sqlQueryS = "SELECT * FROM restaurant ORDER BY name DESC";
-   dbFunctions(sqlQueryS)
+app.get('/restaurant/latest/', (req,res) => {
+    console.log("YESSS")
+    let query1 = "SELECT * FROM restaurant";
+    console.log(query1)
+
+    dbFunctions(query1)
    .then((result) => {
        console.log('/restaurant/latest/')
        res.send(result)
    })
 
+});
+
+app.get('/restaurant/:restaurant_id', (req,res) => {
+    let resturantId = req.params.restaurant_id;
+    let sqlQuery =  "SELECT * FROM restaurant WHERE restaurant_id = " + resturantId;
+    dbFunctions(sqlQuery)
+    .then((result) => {
+        res.send(result)
+    });
+    console.log("asd");
+    
 });
 
 
@@ -204,7 +209,7 @@ function dbFunctions(sqlQuery) {
     return new Promise((result) => {
         con.query(sqlQuery, (err, res) => {
         //console.log("In dbFunctions()")
-        if (err) throw "This is an error in con.query()";
+        if (err) throw "This is an error in con.query():     " + err;
         //result(JSON.stringify(res))
         /*console.log(typeof(res))
         jsonString = JSON.stringify(res)
