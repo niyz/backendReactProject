@@ -8,8 +8,17 @@ var app = express();
 app.use(express.json())
 var path = require('path');
 
+var cors = require('cors');
+app.use(cors());
+
 app.listen(process.env.PORT || 8080)
 
+
+/*app.use(function(req,res,next){
+    res.header("Access-Controll-Allow-origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+})*/
 
 /**
  * Get and postmappings
@@ -50,11 +59,11 @@ app.get('/review/restaurant/:restaurant_id', (req,res) => {
    
 });
 
-app.get('/review/latest/', (req,res) => {
-
-    let sqlQueryS = "SELECT * FROM review ORDER BY updated_at DESC";
+app.get('/review/latest/', (req,res,/* next*/) => {
+     let sqlQueryS = "SELECT * FROM review ORDER BY updated_at DESC";
     dbFunctions(sqlQueryS)
     .then((result) => {
+        console.log('/review/latest/')
         res.send(result)
     })
 
@@ -166,7 +175,16 @@ function dbFunctions(sqlQuery) {
         con.query(sqlQuery, (err, res) => {
         //console.log("In dbFunctions()")
         if (err) throw "This is an error in con.query()";
-        result(JSON.stringify(res))
+        //result(JSON.stringify(res))
+        /*console.log(typeof(res))
+        jsonString = JSON.stringify(res)
+        console.log(typeof(jsonString))
+
+        jsonObj = JSON.parse(jsonString)
+        console.log(typeof(jsonObj))*/
+
+        result(res)
+
         })
         closeDb(con);
     })
