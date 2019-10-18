@@ -91,6 +91,26 @@ app.post('/user/create', (req, res) => {
     });
 });
 
+//User login//
+
+app.post('/user/login', (req,res) => {
+    let sqlQuery = "SELECT username, password FROM user WHERE username = '" + req.body.username + "' AND password= '" + req.body.password +  "';";
+    /*var username = request.body.username;
+    var password = request.body.password;
+    */console.log(sqlQuery);
+    dbFunctions(sqlQuery)
+    .then((result) => {
+        if (result.length > 0) {
+            console.log("Length > 0")
+            res.send("Accepted")
+        } else {
+            console.log("Length <= 0")
+            res.send("Denied")
+
+        }
+    });
+});
+
 app.post('/review/update', (req, res) => {
 
     let sqlQuery = "UPDATE review SET " + "user_id =" + req.body.user_id + ", restaurant_id =" + req.body.restaurant_id + ", rating=" + req.body.rating + ", review_text = '" + req.body.reviewText + "', updated_at='" + dateFunc() + "' WHERE review_id = " + req.body.review_id + ";";
