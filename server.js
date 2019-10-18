@@ -69,6 +69,16 @@ app.get('/review/latest/', (req,res,/* next*/) => {
 
 });
 
+app.get('/restaurant/latest/', (req,res,/* next*/) => {
+    let sqlQueryS = "SELECT * FROM restaurant ORDER BY name DESC";
+   dbFunctions(sqlQueryS)
+   .then((result) => {
+       console.log('/restaurant/latest/')
+       res.send(result)
+   })
+
+});
+
 
 app.post('/user/update', (req,res) => {
 
