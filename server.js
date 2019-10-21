@@ -82,14 +82,50 @@ app.post('/user/update', (req, res) => {
 })
 
 app.post('/user/create', (req, res) => {
+    let getUser = "SELECT username, email FROM user WHERE username ='" + req.body.username + "' AND email ='" + req.body.email +"'";
     let sqlQuery = "INSERT INTO user(username,email,password,role,created_at, updated_at,active) VALUES" +
         "(" + "'" + req.body.username + "'," + "'" + req.body.email + "'," + "'" + req.body.password + "'," +
         "'" + req.body.role + "'," + "'" + dateFunc() + "'," + "'" + dateFunc() + "'," + "'" + 1 + "');";
-    dbFunctions(sqlQuery)
-        .then(() => {
-            res.send("User created");
 
-        });
+            
+    var check = 0
+    console.log(getUser)
+    dbFunctions(getUser)
+        .then((response) => {
+            console.log("Svar från db: " +  response.length)
+            if (response.length > 0)
+            {   
+                console.log("INNE");
+                res.send("Username/mail already exists");
+            } else {
+                console.log("Användare finns inte, försöker skapa")
+                console.log(sqlQuery)
+                check = 1
+            }
+        })
+        .then(() => {
+            if (check == 1) {
+                console.log("CHECK 1")
+                dbFunctions(sqlQuery)
+                        .then(() => {
+                            console.log("Användare skapad....")
+                            res.send("User created");
+                            
+                        })
+                        .catch((error) => {
+                            console.log("FEL1111")
+                        }) 
+    
+            }  else if (check == 0) {
+                console.log("CHECK 0")
+            } 
+
+        })
+        .catch((error) => {
+            console.log(error)
+        }) 
+        
+    
 });
 
 //User login//
